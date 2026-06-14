@@ -5,3 +5,5 @@ numpy
 seaborn
 matplotlib
 scikit-learn
+pyarrow
+ipykernel
