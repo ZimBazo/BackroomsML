@@ -7,3 +7,4 @@ matplotlib
 scikit-learn
 pyarrow
 ipykernel
+imbalanced-learn
