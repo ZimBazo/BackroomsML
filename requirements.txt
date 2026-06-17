@@ -8,3 +8,7 @@ scikit-learn
 pyarrow
 ipykernel
 imbalanced-learn
+streamlit
+fastapi
+uvicorn
+pydantic
