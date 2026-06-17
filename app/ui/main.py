@@ -20,7 +20,7 @@ hunger = st.slider('Голод', min_value=0, max_value=100)
 
 # dataframe_for_pydantic = df_temp[['fatigue', 'panic', 'thirst', 'reaction', 'hunger', 'survived_24h']]
 
-if st.button('Отправить на бекенд'):
+if st.button('Предсказать выживаемость'):
     response = requests.post(f'{fastapi_url}/predict', json={
         'fatigue': fatigue,
         'panic': panic,
@@ -28,6 +28,8 @@ if st.button('Отправить на бекенд'):
         'reaction': reaction,
         'hunger': hunger
     })
-    # data = response.json()
-    # st.write(data)
-    st.write(response.text)
+    
+    data = response.json()
+    data = data.get("prediction")
+    is_survived = ['Человек НЕ выжил', 'Человек выжил'][data]
+    st.write(is_survived)

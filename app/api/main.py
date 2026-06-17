@@ -35,4 +35,6 @@ def prediction_func(data: PredictionRequest):
     logger.warning(f'Data: {data}')
     pred = model.predict(data)
     logger.warning(f'Prediction: {pred}')
-    return 'Good'
+    return {
+        'prediction': int(pred[0])
+    }
