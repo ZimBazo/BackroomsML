@@ -48,7 +48,7 @@ with st.expander("Снаряжение"):
     col1, col2 = st.columns(2)
     with col1:
         has_flashlight = st.checkbox('Фонарик')
-        flashlight_battery = st.slider('Заряд фонарика', 0, 100, 100)
+        flashlight_battery = st.slider('Заряд фонарика', 0, 100, 100, disabled=(not has_flashlight))
         has_knife = st.checkbox('Нож')
         has_backpack = st.checkbox('Рюкзак')
     with col2:
@@ -103,15 +103,15 @@ if st.button('Предсказать выживаемость'):
         'confidence': confidence,
         'pain_tolerance': pain_tolerance,
         'has_flashlight': int(has_flashlight),
-        'flashlight_battery': flashlight_battery,
+        'flashlight_battery': flashlight_battery if has_flashlight else 0,
         'has_knife': int(has_knife),
         'has_backpack': int(has_backpack),
         'has_first_aid_kit': int(has_first_aid_kit),
-        'medkit_count': medkit_count,
+        'medkit_count': medkit_count if has_first_aid_kit else 0,
         'has_water': int(has_water),
-        'water_amount': water_amount,
+        'water_amount': water_amount if has_water else 0,
         'has_food': int(has_food),
-        'food_amount': food_amount,
+        'food_amount': food_amount if has_food else 0,
         'has_radio': int(has_radio),
         'level_id': level_id,
         'level_difficulty': level_difficulty,
@@ -135,19 +135,9 @@ if st.button('Предсказать выживаемость'):
         result = data.get("prediction")
         is_survived = ['Человек НЕ выжил', 'Человек выжил'][result]
         st.success(f'Результат: {is_survived}')
+
+        result = data.get("probability")
+        surviving_probability = result
+        st.success(f'Вероятность выживания: {surviving_probability}')
     else:
         st.error(f'Ошибка при запросе: {response.status_code}')
-
-if st.button('Предсказать выживаемость'):
-    response = requests.post(f'{fastapi_url}/predict', json={
-        'fatigue': fatigue,
-        'panic': panic,
-        'thirst': thirst,
-        'reaction': reaction,
-        'hunger': hunger
-    })
-
-    data = response.json()
-    data = data.get("prediction")
-    is_survived = ['Человек НЕ выжил', 'Человек выжил'][data]
-    st.write(is_survived)

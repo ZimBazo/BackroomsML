@@ -6,7 +6,7 @@ import joblib
 
 app = FastAPI()
 
-model = joblib.load('../../models/XGBoost.pkl')
+model = joblib.load('../../models/best_model_v1.pkl')
 
 origins = [
     'http://127.0.0.1:8501',
@@ -100,7 +100,9 @@ def prediction_func(data: PredictionRequest):
     
     logger.warning(f'Data features: {features}')
     pred = model.predict([features])
-    logger.warning(f'Prediction: {pred}')
+    proba = model.predict_proba([features])
+    logger.warning(f'Prediction: {pred}, Probability: {proba}')
     return {
-        'prediction': int(pred[0])
+        'prediction': int(pred[0]),
+        'probability': float(proba[0][1])
     }
