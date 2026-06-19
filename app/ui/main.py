@@ -15,7 +15,7 @@ fastapi_url = 'http://127.0.0.1:8000'
 st.set_page_config(page_title='Backrooms 24h', layout='centered')
 
 st.title('Backrooms survival predictor')
-tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики персонажа', 'Состояние персонажа', 'Снаряжение', 'Характеристики уровня', 'Предсказание'])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики персонажа', 'Состояние персонажа', 'Снаряжение', 'Уровень', 'Предсказание'])
 
 # State
 if 'sex' not in st.session_state:
@@ -155,7 +155,6 @@ with tab4:
         time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, 2)
 
 with tab5:
-
     payload = {
         'age': age,
         'sex': sex,
@@ -206,8 +205,6 @@ with tab5:
     }
 
     if st.button('Предсказать выживаемость', width='stretch'):
-        st.dataframe(payload)
-
         @st.dialog('Предсказание:')
         def prediction():
             response = requests.post(f'{fastapi_url}/predict', json=payload)
@@ -216,12 +213,14 @@ with tab5:
                 data = response.json()
                 result = data.get("prediction")
                 is_survived = ['Человек НЕ выжил', 'Человек выжил'][result]
-                st.success(f'Результат: {is_survived}')
+                st.write(f'Результат: {is_survived}')
 
                 result = data.get("probability")
                 surviving_probability = result
-                st.success(f'Вероятность выживания: {surviving_probability:.3f}')
+                st.badge(f'Вероятность выживания: {surviving_probability:.3f}', color='primary')
             else:
                 st.error(f'Ошибка при запросе: {response.status_code}')
 
         prediction()
+
+    st.table(payload)
