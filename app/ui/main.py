@@ -40,7 +40,8 @@ LEVEL_IMAGES = {
 
 st.set_page_config(page_title='Backrooms 24h', layout='centered')
 
-st.title('Backrooms survival predictor')
+st.image(image='app/ui/images/hero_image_3.png', width='stretch')  
+# st.title('Backrooms survival predictor')
 tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики', 'Состояние', 'Снаряжение', 'Уровень', 'Предсказание'])
 
 
@@ -50,6 +51,15 @@ if 'sex' not in st.session_state:
 
 if 'level_id' not in st.session_state:
             st.session_state.level_id = '0'
+
+stats_defaults = {
+    'strength': 5, 'reaction': 5, 'stamina': 5, 'speed': 5,
+    'intelligence': 5, 'perception': 5, 'agility': 5, 'endurance': 5,
+    'stress_resistance': 5, 'luck': 5
+}
+for stat, default in stats_defaults.items():
+    if stat not in st.session_state:
+        st.session_state[stat] = default
 
 # Funcitons
 def apply_level_preset():
@@ -63,6 +73,11 @@ def sex_check():
     else:
         st.session_state.sex = 'male'
 
+def stat_check():
+    for stat in stats_defaults:
+        if st.session_state.get(stat) is None:
+            st.session_state[stat] = stats_defaults[stat]
+
 def level_check():
     if st.session_state.level_id != None:
         apply_level_preset()
@@ -71,7 +86,7 @@ def level_check():
         apply_level_preset()
 
 with tab1:
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1.58], width='stretch')
     with col1:
         name = st.text_input('Имя персонажа')
         if 'name' not in st.session_state:
@@ -82,16 +97,16 @@ with tab1:
         weight_kg = st.slider('Вес (кг)', 35, 137, 70)
             
     with col2:
-        strength = st.slider('Сила', 0, 10, 5)
-        reaction = st.slider('Реакция', 0, 10, 5)
-        stamina = st.slider('Выносливость', 0, 10, 5)
-        speed = st.slider('Скорость', 0, 10, 5)
-        intelligence = st.slider('Интеллект', 0, 10, 5)
-        perception = st.slider('Восприятие', 0, 10, 5)
-        agility = st.slider('Ловкость', 0, 10, 5)
-        endurance = st.slider('Стойкость', 0, 10, 5)
-        stress_resistance = st.slider('Стрессоустойчивость', 0, 10, 5)
-        luck = st.slider('Удача', 0, 10, 5)
+        strength = st.segmented_control('Сила', list(range(1, 11)), on_change=stat_check, key='strength')
+        reaction = st.segmented_control('Реакция', list(range(1, 11)), on_change=stat_check, key='reaction')
+        stamina = st.segmented_control('Выносливость', list(range(1, 11)), on_change=stat_check, key='stamina')
+        speed = st.segmented_control('Скорость', list(range(1, 11)), on_change=stat_check, key='speed')
+        intelligence = st.segmented_control('Интеллект', list(range(1, 11)), on_change=stat_check, key='intelligence')
+        perception = st.segmented_control('Восприятие', list(range(1, 11)), on_change=stat_check, key='perception')
+        agility = st.segmented_control('Ловкость', list(range(1, 11)), on_change=stat_check, key='agility')
+        endurance = st.segmented_control('Стойкость', list(range(1, 11)), on_change=stat_check, key='endurance')
+        stress_resistance = st.segmented_control('Стрессоустойчивость', list(range(1, 11)), on_change=stat_check, key='stress_resistance')
+        luck = st.segmented_control('Удача', list(range(1, 11)), on_change=stat_check, key='luck')
 
 # with st.expander("Характеристики персонажа", expanded=True):
     
@@ -296,7 +311,7 @@ with tab5:
         'noise_generated': noise_generated,
         'time_since_last_encounter': time_since_last_encounter
     }
-
+    st.image(image='app/ui/images/predict_picture.webp', width='stretch')    
     if st.button('Предсказать выживаемость', width='stretch'):
         @st.dialog('Предсказание:')
         def prediction():
