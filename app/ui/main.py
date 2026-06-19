@@ -1,3 +1,4 @@
+from pandas.core.config_init import val_mca
 import streamlit as st
 import pandas as pd
 import os
@@ -7,16 +8,16 @@ from loguru import logger
 
 fastapi_url = 'http://127.0.0.1:8000'
 
-st.set_page_config(page_title='Backrooms 24h', layout='centered')
+st.set_page_config(page_title='Backrooms 24h', layout='wide')
 
 st.title('Backrooms survival predictor')
-st.write('Визуализация и предсказание выживания в Закулисье')
+tab1, tab2, tab3, tab4 = st.tabs(['Характеристики персонажа', 'Состояние персонажа', 'Снаряжение', 'Характеристики уровня'])
 
-with st.expander("Характеристики персонажа", expanded=True):
+with tab1:
     col1, col2 = st.columns(2)
     with col1:
         age = st.slider('Возраст', 12, 80, 25)
-        sex = st.selectbox('Пол', ['female', 'male', 'other'])
+        sex = st.pills('Пол', ['female', 'male', 'other'], default='male')
         height_cm = st.slider('Рост (см)', 140, 210, 175)
         weight_kg = st.slider('Вес (кг)', 35, 137, 70)
     with col2:
@@ -31,7 +32,10 @@ with st.expander("Характеристики персонажа", expanded=Tru
         stress_resistance = st.slider('Стрессоустойчивость', 0, 10, 5)
         luck = st.slider('Удача', 0, 10, 5)
 
-with st.expander("Состояние персонажа"):
+# with st.expander("Характеристики персонажа", expanded=True):
+    
+with tab2:
+# with st.expander("Состояние персонажа"):
     col1, col2 = st.columns(2)
     with col1:
         panic = st.slider('Паника', 0, 100, 20)
@@ -44,23 +48,25 @@ with st.expander("Состояние персонажа"):
         confidence = st.slider('Уверенность', 0, 100, 80)
         pain_tolerance = st.slider('Терпимость к боли', 0, 100, 50)
 
-with st.expander("Снаряжение"):
+with tab3:
+# with st.expander("Снаряжение"):
     col1, col2 = st.columns(2)
     with col1:
-        has_flashlight = st.checkbox('Фонарик')
+        has_flashlight = st.toggle('Фонарик')
         flashlight_battery = st.slider('Заряд фонарика', 0, 100, 100, disabled=(not has_flashlight))
-        has_knife = st.checkbox('Нож')
-        has_backpack = st.checkbox('Рюкзак')
+        has_knife = st.toggle('Нож')
+        has_backpack = st.toggle('Рюкзак')
     with col2:
-        has_first_aid_kit = st.checkbox('Аптечка')
-        medkit_count = st.slider('Количество аптечек', 0, 10, 1)
-        has_water = st.checkbox('Вода')
-        water_amount = st.slider('Количество воды (мл)', 0, 3000, 500)
-        has_food = st.checkbox('Еда')
-        food_amount = st.slider('Количество еды (ккал)', 0, 3000, 500)
-        has_radio = st.checkbox('Рация')
+        has_first_aid_kit = st.toggle('Аптечка')
+        medkit_count = st.slider('Количество аптечек', 0, 10, 1, disabled=(not has_first_aid_kit))
+        has_water = st.toggle('Вода')
+        water_amount = st.slider('Количество воды (мл)', 0, 3000, 500, disabled=(not has_water))
+        has_food = st.toggle('Еда')
+        food_amount = st.slider('Количество еды (ккал)', 0, 3000, 500, disabled=(not has_food))
+        has_radio = st.toggle('Рация')
 
-with st.expander("Характеристики уровня"):
+with tab4:
+# with st.expander("Характеристики уровня"):
     col1, col2 = st.columns(2)
     with col1:
         level_id = st.selectbox('ID уровня', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'])
@@ -72,14 +78,16 @@ with st.expander("Характеристики уровня"):
         resource_density = st.slider('Плотность ресурсов', 0, 100, 50)
         maze_complexity = st.slider('Сложность лабиринта', 0, 100, 30)
         geometry_stability = st.slider('Стабильность геометрии', 0, 100, 90)
-        special_rule = st.selectbox('Особое правило', ['neutral', 'liminal_office', 'mechanical_noise', 'haunted_hotel', 'cave_isolation', 'flooding', 'trap_exit', 'darkness'])
+        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'])
         spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, 10)
         distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, 50)
         noise_generated = st.slider('Генерируемый шум', 0, 100, 20)
         time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, 2)
 
 if st.button('Предсказать выживаемость'):
-    payload = {
+
+    if not sex == None:
+        payload = {
         'age': age,
         'sex': sex,
         'height_cm': height_cm,
@@ -126,18 +134,24 @@ if st.button('Предсказать выживаемость'):
         'distance_to_nearest_entity': distance_to_nearest_entity,
         'noise_generated': noise_generated,
         'time_since_last_encounter': time_since_last_encounter
-    }
-    
-    response = requests.post(f'{fastapi_url}/predict', json=payload)
-    
-    if response.status_code == 200:
-        data = response.json()
-        result = data.get("prediction")
-        is_survived = ['Человек НЕ выжил', 'Человек выжил'][result]
-        st.success(f'Результат: {is_survived}')
+        }
 
-        result = data.get("probability")
-        surviving_probability = result
-        st.success(f'Вероятность выживания: {surviving_probability}')
+        @st.dialog('Предсказание:')
+        def prediction():
+            response = requests.post(f'{fastapi_url}/predict', json=payload)
+        
+            if response.status_code == 200:
+                data = response.json()
+                result = data.get("prediction")
+                is_survived = ['Человек НЕ выжил', 'Человек выжил'][result]
+                st.success(f'Результат: {is_survived}')
+
+                result = data.get("probability")
+                surviving_probability = result
+                st.success(f'Вероятность выживания: {surviving_probability:.3f}')
+            else:
+                st.error(f'Ошибка при запросе: {response.status_code}')
+
+        prediction()
     else:
-        st.error(f'Ошибка при запросе: {response.status_code}')
+        st.toast(f'Пожалуйста, выберите пол [Характеристики персонажа]')
