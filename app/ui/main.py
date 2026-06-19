@@ -12,10 +12,23 @@ from loguru import logger
 
 fastapi_url = 'http://127.0.0.1:8000'
 
+LEVEL_PRESETS = {
+    '0':  {'level_difficulty': 60, 'visibility': 65, 'entity_density': 15, 'entity_aggression': 10, 'resource_density': 30, 'maze_complexity': 85, 'geometry_stability': 60, 'special_rule': 'neutral'},
+    '1':  {'level_difficulty': 40, 'visibility': 70, 'entity_density': 25, 'entity_aggression': 15, 'resource_density': 55, 'maze_complexity': 50, 'geometry_stability': 75, 'special_rule': 'neutral'},
+    '2':  {'level_difficulty': 70, 'visibility': 40, 'entity_density': 35, 'entity_aggression': 30, 'resource_density': 25, 'maze_complexity': 75, 'geometry_stability': 50, 'special_rule': 'mechanical_noise'},
+    '3':  {'level_difficulty': 75, 'visibility': 50, 'entity_density': 40, 'entity_aggression': 35, 'resource_density': 30, 'maze_complexity': 70, 'geometry_stability': 55, 'special_rule': 'mechanical_noise'},
+    '4':  {'level_difficulty': 30, 'visibility': 85, 'entity_density': 10, 'entity_aggression': 10, 'resource_density': 80, 'maze_complexity': 30, 'geometry_stability': 90, 'special_rule': 'liminal_office'},
+    '5':  {'level_difficulty': 65, 'visibility': 60, 'entity_density': 45, 'entity_aggression': 40, 'resource_density': 40, 'maze_complexity': 60, 'geometry_stability': 65, 'special_rule': 'haunted_hotel'},
+    '6':  {'level_difficulty': 80, 'visibility': 5,  'entity_density': 50, 'entity_aggression': 50, 'resource_density': 20, 'maze_complexity': 80, 'geometry_stability': 70, 'special_rule': 'darkness'},
+    '7':  {'level_difficulty': 75, 'visibility': 20, 'entity_density': 35, 'entity_aggression': 30, 'resource_density': 25, 'maze_complexity': 65, 'geometry_stability': 40, 'special_rule': 'flooding'},
+    '8':  {'level_difficulty': 85, 'visibility': 30, 'entity_density': 45, 'entity_aggression': 45, 'resource_density': 20, 'maze_complexity': 90, 'geometry_stability': 30, 'special_rule': 'cave_isolation'},
+    'end': {'level_difficulty': 90, 'visibility': 80, 'entity_density': 5,  'entity_aggression': 5,  'resource_density': 70, 'maze_complexity': 20, 'geometry_stability': 95, 'special_rule': 'trap_exit'},
+}
+
 st.set_page_config(page_title='Backrooms 24h', layout='centered')
 
 st.title('Backrooms survival predictor')
-tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики персонажа', 'Состояние персонажа', 'Снаряжение', 'Уровень', 'Предсказание'])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики', 'Состояние', 'Снаряжение', 'Уровень', 'Предсказание'])
 
 
 # State
@@ -25,24 +38,31 @@ if 'sex' not in st.session_state:
 if 'level_id' not in st.session_state:
             st.session_state.level_id = '0'
 
-# Hooks
+# Funcitons
+def apply_level_preset():
+    preset = LEVEL_PRESETS.get(st.session_state.level_id, {})
+    for key, value in preset.items():
+        st.session_state[key] = value
+
 def sex_check():
     if st.session_state.sex != None:
         return 
     else:
         st.session_state.sex = 'male'
-        # return
 
 def level_check():
     if st.session_state.level_id != None:
-        return 
+        apply_level_preset()
     else:
         st.session_state.level_id = '0'
-        # return
+        apply_level_preset()
 
 with tab1:
     col1, col2 = st.columns(2)
     with col1:
+        name = st.text_input('Имя персонажа')
+        if 'name' not in st.session_state:
+            st.session_state.name = name
         age = st.slider('Возраст', 12, 80, 25)
         sex = st.pills('Пол', ['female', 'male', 'other'], on_change=sex_check, key='sex')
         height_cm = st.slider('Рост (см)', 140, 210, 175)
@@ -137,7 +157,6 @@ with tab3:
         has_radio = st.toggle('Рация')
 
 with tab4:
-# with st.expander("Характеристики уровня"):
     col1, col2 = st.columns(2)
     with col1:
         level_names = {
@@ -152,20 +171,64 @@ with tab4:
             '8': 'Level 8: Cave Systems',
             'end': 'The End: Trap level'
         }
-        level_id = st.pills('Уровень', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'], on_change=level_check, key='level_id', default='0', format_func=lambda x: level_names.get(x,x))
-        level_difficulty = st.slider('Сложность уровня', 1, 5, 2, disabled=True)
-        visibility = st.slider('Видимость', 0, 100, 80, disabled=True)
-        entity_density = st.slider('Плотность сущностей', 0, 100, 20, disabled=True)
-        entity_aggression = st.slider('Агрессия сущностей', 0, 100, 20, disabled=True)
+        level_id = st.pills('Уровень', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'], on_change=level_check, key='level_id', default='0', format_func=lambda x: level_names.get(x, x))
+        level_difficulty = st.slider('Сложность уровня', 0, 100, st.session_state.get('level_difficulty', 60), disabled=True)
+        visibility = st.slider('Видимость', 0, 100, st.session_state.get('visibility', 65), disabled=True)
+        entity_density = st.slider('Плотность сущностей', 0, 100, st.session_state.get('entity_density', 15), disabled=True)
+        entity_aggression = st.slider('Агрессия сущностей', 0, 100, st.session_state.get('entity_aggression', 10), disabled=True)
     with col2:
-        resource_density = st.slider('Плотность ресурсов', 0, 100, 50, disabled=True)
-        maze_complexity = st.slider('Сложность лабиринта', 0, 100, 30, disabled=True)
-        geometry_stability = st.slider('Стабильность геометрии', 0, 100, 90, disabled=True)
-        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'], disabled=True)
-        spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, 10, disabled=True)
-        distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, 50, disabled=True)
-        noise_generated = st.slider('Генерируемый шум', 0, 100, 20, disabled=True)
-        time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, 2, disabled=True)
+        resource_density = st.slider('Плотность ресурсов', 0, 100, st.session_state.get('resource_density', 30), disabled=True)
+        maze_complexity = st.slider('Сложность лабиринта', 0, 100, st.session_state.get('maze_complexity', 85), disabled=True)
+        geometry_stability = st.slider('Стабильность геометрии', 0, 100, st.session_state.get('geometry_stability', 60), disabled=True)
+        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'], index=['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'].index(st.session_state.get('special_rule', 'neutral')), disabled=True)
+        spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, st.session_state.get('spawn_area_danger', 10))
+        distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, st.session_state.get('distance_to_nearest_entity', 50))
+        noise_generated = st.slider('Генерируемый шум', 0, 100, st.session_state.get('noise_generated', 20))
+        time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, st.session_state.get('time_since_last_encounter', 2))
+
+good_messages = {
+    '1': 'пережил ещё один день в бесконечных жёлтых комнатах.',
+    '2': 'нашёл бутылку настоящей миндальной воды и выжил.',
+    '3': 'успешно спрятался от Смайлера.',
+    '4': f'пережил ночь на {st.session_state.level_id}',
+    '5': f'выбрался из сырого подвала Уровня {st.session_state.level_id} живым.',
+    '6': 'не сошёл с ума от гула ламп за целый день.',
+    '7': 'сумел убежать от Гончей.',
+    '8': 'нашёл относительно безопасную комнату и отдохнул.',
+    '9': 'пережил встречу с Partygoer\'ом и остался цел.',
+    '10': 'прошёл через тёмный коридор и увидел свет (ламп).',
+    '11': 'прожил день без единого noclip\'а.',
+    '12': 'нашёл выход... на следующий уровень.',
+    '13': 'не утонул в фальшивой миндальной воде.',
+    '14': 'пережил обвал потолка и продолжил путь.',
+    '15': 'наконец-то выспался под гулом флуоресцентных ламп.'
+}
+
+bad_messages = {
+    '1': 'слишком сильно noclipped и провалился в Пустоту.',
+    '2': f'был съеден заживо Смайлером на Уровне {st.session_state.level_id}',
+    '3': 'пытался убежать от Гончей и не успел.',
+    '4': 'потерялся навсегда в бесконечных жёлтых комнатах.',
+    '5': f'был раздавлен обвалившимся бетоном на Уровне {st.session_state.level_id}',
+    '6': 'слишком долго смотрел в темноту.',
+    '7': 'утонул в «миндальной воде», которая оказалась чем-то другим.',
+    '8': 'попал на неправильную вечеринку и был разорван Partygoers.',
+    '9': 'провалился сквозь пол и исчез навсегда.',
+    '10': 'наконец понял, что выхода нет.',
+    '11': 'был убит Сущностью.',
+    '12': 'решил срезать путь через Уровень !.',
+    '13': 'был пронзён ржавой арматурой в технических коридорах.',
+    '14': 'сгорел заживо под бесконечными лампами.',
+    '15': 'услышал шаги позади и больше ничего не услышал.'
+}
+
+def random_message(type: str):
+    random_number = random.randint(1, 15)
+
+    if type == 'good':
+        return good_messages[f'{random_number}']
+    elif type == 'bad':
+        return bad_messages[f'{random_number}']
 
 with tab5:
     payload = {
@@ -225,8 +288,13 @@ with tab5:
             if response.status_code == 200:
                 data = response.json()
                 result = data.get("prediction")
-                is_survived = ['Человек НЕ выжил', 'Человек выжил'][result]
-                st.write(f'Результат: {is_survived}')
+                is_survived = [f'Неудача! Бедняга {name} {random_message(type="bad")}', f'Ура! Бедняга {name} {random_message(type="good")}'][result]
+                st.write(f'{is_survived}')
+
+                if result == 0:
+                    st.badge(f'{is_survived}', color='red', width='content')
+                else:
+                    st.badge(f'{is_survived}', color='green')
 
                 result = data.get("probability")
                 surviving_probability = result
