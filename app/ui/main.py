@@ -17,6 +17,7 @@ st.set_page_config(page_title='Backrooms 24h', layout='centered')
 st.title('Backrooms survival predictor')
 tab1, tab2, tab3, tab4, tab5 = st.tabs(['Характеристики персонажа', 'Состояние персонажа', 'Снаряжение', 'Уровень', 'Предсказание'])
 
+
 # State
 if 'sex' not in st.session_state:
             st.session_state.sex = 'male'
@@ -139,20 +140,32 @@ with tab4:
 # with st.expander("Характеристики уровня"):
     col1, col2 = st.columns(2)
     with col1:
-        level_id = st.pills('ID уровня', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'], on_change=level_check, key='level_id', default='0')
-        level_difficulty = st.slider('Сложность уровня', 1, 5, 2)
-        visibility = st.slider('Видимость', 0, 100, 80)
-        entity_density = st.slider('Плотность сущностей', 0, 100, 20)
-        entity_aggression = st.slider('Агрессия сущностей', 0, 100, 20)
+        level_names = {
+            '0': 'Level 0: Threshold',
+            '1': 'Level 1: Habitable Zone',
+            '2': 'Level 2: Abandoned Utility Halls',
+            '3': 'Level 3: Electrical Station',
+            '4': 'Level 4: Abandoned Office',
+            '5': 'Level 5: Terror Hotel',
+            '6': 'Level 6: Lights Out',
+            '7': 'Level 7: Flooded Sewers',
+            '8': 'Level 8: Cave Systems',
+            'end': 'The End: Trap level'
+        }
+        level_id = st.pills('Уровень', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'], on_change=level_check, key='level_id', default='0', format_func=lambda x: level_names.get(x,x))
+        level_difficulty = st.slider('Сложность уровня', 1, 5, 2, disabled=True)
+        visibility = st.slider('Видимость', 0, 100, 80, disabled=True)
+        entity_density = st.slider('Плотность сущностей', 0, 100, 20, disabled=True)
+        entity_aggression = st.slider('Агрессия сущностей', 0, 100, 20, disabled=True)
     with col2:
-        resource_density = st.slider('Плотность ресурсов', 0, 100, 50)
-        maze_complexity = st.slider('Сложность лабиринта', 0, 100, 30)
-        geometry_stability = st.slider('Стабильность геометрии', 0, 100, 90)
-        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'])
-        spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, 10)
-        distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, 50)
-        noise_generated = st.slider('Генерируемый шум', 0, 100, 20)
-        time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, 2)
+        resource_density = st.slider('Плотность ресурсов', 0, 100, 50, disabled=True)
+        maze_complexity = st.slider('Сложность лабиринта', 0, 100, 30, disabled=True)
+        geometry_stability = st.slider('Стабильность геометрии', 0, 100, 90, disabled=True)
+        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'], disabled=True)
+        spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, 10, disabled=True)
+        distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, 50, disabled=True)
+        noise_generated = st.slider('Генерируемый шум', 0, 100, 20, disabled=True)
+        time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, 2, disabled=True)
 
 with tab5:
     payload = {
