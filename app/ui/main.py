@@ -88,7 +88,7 @@ def level_check():
 with tab1:
     col1, col2 = st.columns([1, 1.58], width='stretch')
     with col1:
-        name = st.text_input('Имя персонажа')
+        name = st.text_input('Имя персонажа', placeholder='Введите имя персонажа')
         if 'name' not in st.session_state:
             st.session_state.name = name
         age = st.slider('Возраст', 12, 80, 25)
