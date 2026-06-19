@@ -25,6 +25,19 @@ LEVEL_PRESETS = {
     'end': {'level_difficulty': 90, 'visibility': 80, 'entity_density': 5,  'entity_aggression': 5,  'resource_density': 70, 'maze_complexity': 20, 'geometry_stability': 95, 'special_rule': 'trap_exit'},
 }
 
+LEVEL_IMAGES = {
+    '0': 'app/ui/images/level_0.png',
+    '1': 'app/ui/images/level_1.jpg',
+    '2': 'app/ui/images/level_2.jpg',
+    '3': 'app/ui/images/level_3.jpg',
+    '4': 'app/ui/images/level_4.jpg',
+    '5': 'app/ui/images/level_5.jpg',
+    '6': 'app/ui/images/level_6.webp',
+    '7': 'app/ui/images/level_7.webp',
+    '8': 'app/ui/images/level_8.png',
+    'end': 'app/ui/images/level_end.jpg',
+}
+
 st.set_page_config(page_title='Backrooms 24h', layout='centered')
 
 st.title('Backrooms survival predictor')
@@ -172,19 +185,23 @@ with tab4:
             'end': 'The End: Trap level'
         }
         level_id = st.pills('Уровень', ['0', '1', '2', '3', '4', '5', '6', '7', '8', 'end'], on_change=level_check, key='level_id', default='0', format_func=lambda x: level_names.get(x, x))
-        level_difficulty = st.slider('Сложность уровня', 0, 100, st.session_state.get('level_difficulty', 60), disabled=True)
-        visibility = st.slider('Видимость', 0, 100, st.session_state.get('visibility', 65), disabled=True)
-        entity_density = st.slider('Плотность сущностей', 0, 100, st.session_state.get('entity_density', 15), disabled=True)
-        entity_aggression = st.slider('Агрессия сущностей', 0, 100, st.session_state.get('entity_aggression', 10), disabled=True)
     with col2:
-        resource_density = st.slider('Плотность ресурсов', 0, 100, st.session_state.get('resource_density', 30), disabled=True)
-        maze_complexity = st.slider('Сложность лабиринта', 0, 100, st.session_state.get('maze_complexity', 85), disabled=True)
-        geometry_stability = st.slider('Стабильность геометрии', 0, 100, st.session_state.get('geometry_stability', 60), disabled=True)
-        special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'], index=['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'].index(st.session_state.get('special_rule', 'neutral')), disabled=True)
-        spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, st.session_state.get('spawn_area_danger', 10))
-        distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, st.session_state.get('distance_to_nearest_entity', 50))
-        noise_generated = st.slider('Генерируемый шум', 0, 100, st.session_state.get('noise_generated', 20))
-        time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, st.session_state.get('time_since_last_encounter', 2))
+        st.image(image=LEVEL_IMAGES.get(st.session_state.level_id), width='stretch')    
+        with st.expander('Характеристики уровня'):   
+            level_difficulty = st.slider('Сложность уровня', 0, 100, st.session_state.get('level_difficulty', 60), disabled=True)
+            visibility = st.slider('Видимость', 0, 100, st.session_state.get('visibility', 65), disabled=True)
+            entity_density = st.slider('Плотность сущностей', 0, 100, st.session_state.get('entity_density', 15), disabled=True)
+            entity_aggression = st.slider('Агрессия сущностей', 0, 100, st.session_state.get('entity_aggression', 10), disabled=True)
+            resource_density = st.slider('Плотность ресурсов', 0, 100, st.session_state.get('resource_density', 30), disabled=True)
+            maze_complexity = st.slider('Сложность лабиринта', 0, 100, st.session_state.get('maze_complexity', 85), disabled=True)
+            geometry_stability = st.slider('Стабильность геометрии', 0, 100, st.session_state.get('geometry_stability', 60), disabled=True)
+            special_rule = st.selectbox('Особое правило', ['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'], index=['cave_isolation', 'darkness', 'flooding', 'haunted_hotel', 'liminal_office', 'mechanical_noise', 'neutral', 'resource_rich', 'trap_exit'].index(st.session_state.get('special_rule', 'neutral')), disabled=True)
+            st.info('Помимо этих характеристик, каждый уровень несет в себе скрытый признак, который такжже влияет на предсказание')
+        with st.expander('Ситуативные характеристики', expanded=True): 
+            spawn_area_danger = st.slider('Опасность зоны спавна', 0, 100, st.session_state.get('spawn_area_danger', 10))
+            distance_to_nearest_entity = st.slider('Расстояние до ближайшей сущности', 0, 100, st.session_state.get('distance_to_nearest_entity', 50))
+            noise_generated = st.slider('Генерируемый шум', 0, 100, st.session_state.get('noise_generated', 20))
+            time_since_last_encounter = st.slider('Время с последней встречи (ч)', 0, 24, st.session_state.get('time_since_last_encounter', 2))
 
 good_messages = {
     '1': 'пережил ещё один день в бесконечных жёлтых комнатах.',
