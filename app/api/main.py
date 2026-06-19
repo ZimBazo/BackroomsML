@@ -6,7 +6,7 @@ import joblib
 
 app = FastAPI()
 
-model = joblib.load('../../models/XGBoost.pkl')
+model = joblib.load('../../models/best_model_v1.pkl')
 
 origins = [
     'http://127.0.0.1:8501',
