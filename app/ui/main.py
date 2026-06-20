@@ -52,6 +52,10 @@ if 'sex' not in st.session_state:
 if 'level_id' not in st.session_state:
             st.session_state.level_id = '0'
 
+for key in ['flashlight_battery', 'food_amount', 'medkit_count', 'water_amount']:
+    if f'{key}' not in st.session_state:
+            st.session_state[f'{key}'] = 0
+
 stats_defaults = {
     'strength': 5, 'reaction': 5, 'stamina': 5, 'speed': 5,
     'intelligence': 5, 'perception': 5, 'agility': 5, 'endurance': 5,
@@ -85,6 +89,13 @@ def level_check():
         st.session_state.level_id = '0'
         apply_level_preset()
 
+def value_check(type: str):
+    if st.session_state[f'{type}'] != None:
+        return
+    else:
+        st.session_state[f'{type}'] = 0
+        
+
 with tab1:
     col1, col2 = st.columns([1, 1.58], width='stretch')
     with col1:
@@ -110,7 +121,8 @@ with tab1:
 
 # with st.expander("Характеристики персонажа", expanded=True):
     
-with tab2:
+@st.fragment
+def state_tab2():
     if st.button('Рандомизировать состояние', width='stretch'):
         st.session_state.panic = random.randint(0, 100)
         st.session_state.fatigue = random.randint(0, 100)
@@ -167,22 +179,26 @@ with tab2:
     confidence = st.session_state.get('confidence', 80)
     pain_tolerance = st.session_state.get('pain_tolerance', 50)
 
+with tab2:
+    state_tab2()
+
 with tab3:
 # with st.expander("Снаряжение"):
+    st.warning('У вас имеется 3 очка. Их можно потратить на предмет или расходники. 1 предмет или одна порция расходников требуют 1 очко')
     col1, col2 = st.columns(2)
     with col1:
-        has_flashlight = st.toggle('Фонарик')
-        flashlight_battery = st.slider('Заряд фонарика', 0, 100, 100, disabled=(not has_flashlight))
+        # has_flashlight = st.toggle('Фонарик')
+        flashlight_battery = st.segmented_control(label='Заряд фонарика', options=[0, 1, 2, 3], default=0, on_change=value_check(type='flashlight_battery'), key='flashlight_battery')
         has_knife = st.toggle('Нож')
-        has_backpack = st.toggle('Рюкзак')
-    with col2:
-        has_first_aid_kit = st.toggle('Аптечка')
-        medkit_count = st.slider('Количество аптечек', 0, 10, 1, disabled=(not has_first_aid_kit))
-        has_water = st.toggle('Вода')
-        water_amount = st.slider('Количество воды (мл)', 0, 3000, 500, disabled=(not has_water))
-        has_food = st.toggle('Еда')
-        food_amount = st.slider('Количество еды (ккал)', 0, 3000, 500, disabled=(not has_food))
         has_radio = st.toggle('Рация')
+        # has_backpack = st.toggle('Рюкзак')
+    with col2:
+        # has_first_aid_kit = st.toggle('Аптечка')
+        medkit_count = st.segmented_control(label='Количество аптечек', options=[0, 1, 2, 3], default=0, on_change=value_check(type='medkit_count'), key='medkit_count')
+        # has_water = st.toggle('Вода')
+        water_amount = st.segmented_control(label='Количество воды', options=[0, 1, 2, 3], default=0, on_change=value_check(type='water_amount'), key='water_amount')
+        # has_food = st.toggle('Еда')
+        food_amount = st.segmented_control(label='Количество еды', options=[0, 1, 2, 3], default=0, on_change=value_check(type='food_amount'), key='food_amount')
 
 with tab4:
     col1, col2 = st.columns(2)
@@ -248,7 +264,7 @@ bad_messages = {
     '9': 'провалился сквозь пол и исчез навсегда.',
     '10': 'наконец понял, что выхода нет.',
     '11': 'был убит Сущностью.',
-    '12': 'решил срезать путь через Уровень !.',
+    '12': 'решил срезать путь через "Уровень !".',
     '13': 'был пронзён ржавой арматурой в технических коридорах.',
     '14': 'сгорел заживо под бесконечными лампами.',
     '15': 'услышал шаги позади и больше ничего не услышал.'
@@ -278,24 +294,24 @@ with tab5:
         'endurance': endurance,
         'stress_resistance': stress_resistance,
         'luck': luck,
-        'panic': panic,
-        'fatigue': fatigue,
-        'hunger': hunger,
-        'thirst': thirst,
-        'mental_stability': mental_stability,
-        'focus': focus,
-        'confidence': confidence,
-        'pain_tolerance': pain_tolerance,
-        'has_flashlight': int(has_flashlight),
-        'flashlight_battery': flashlight_battery if has_flashlight else 0,
+        'panic': st.session_state.get('panic', 20),
+        'fatigue': st.session_state.get('fatigue', 20),
+        'hunger': st.session_state.get('hunger', 20),
+        'thirst': st.session_state.get('thirst', 20),
+        'mental_stability': st.session_state.get('mental_stability', 80),
+        'focus': st.session_state.get('focus', 80),
+        'confidence': st.session_state.get('confidence', 80),
+        'pain_tolerance': st.session_state.get('pain_tolerance', 50),
+        # 'has_flashlight': int(has_flashlight),
+        'flashlight_battery': (flashlight_battery if flashlight_battery != None else 0) * 33,
         'has_knife': int(has_knife),
-        'has_backpack': int(has_backpack),
-        'has_first_aid_kit': int(has_first_aid_kit),
-        'medkit_count': medkit_count if has_first_aid_kit else 0,
-        'has_water': int(has_water),
-        'water_amount': water_amount if has_water else 0,
-        'has_food': int(has_food),
-        'food_amount': food_amount if has_food else 0,
+        # 'has_backpack': int(has_backpack),
+        # 'has_first_aid_kit': int(has_first_aid_kit),
+        'medkit_count': medkit_count * 3,
+        # 'has_water': int(has_water),
+        'water_amount': water_amount * 1000,
+        # 'has_food': int(has_food),
+        'food_amount': food_amount * 1000,
         'has_radio': int(has_radio),
         'level_id': level_id,
         'level_difficulty': level_difficulty,
@@ -322,12 +338,6 @@ with tab5:
                 result = data.get("prediction")
                 is_survived = [f'Неудача! Бедняга {name} {random_message(type="bad")}', f'Ура! Бедняга {name} {random_message(type="good")}'][result]
                 st.write(f'{is_survived}')
-
-                if result == 0:
-                    st.badge(f'{is_survived}', color='red', width='content')
-                else:
-                    st.badge(f'{is_survived}', color='green')
-
                 result = data.get("probability")
                 surviving_probability = result
                 st.badge(f'Вероятность выживания: {surviving_probability:.3f}', color='primary')

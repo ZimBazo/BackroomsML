@@ -6,7 +6,7 @@ import joblib
 
 app = FastAPI()
 
-model = joblib.load('../../models/XGBoost_v2.pkl')
+model = joblib.load('../../models/best_model_v1.pkl')
 
 origins = [
     'http://127.0.0.1:8501',
@@ -44,15 +44,15 @@ class PredictionRequest(BaseModel):
     focus: int
     confidence: int
     pain_tolerance: int
-    has_flashlight: int
+    # has_flashlight: int
     flashlight_battery: int
     has_knife: int
-    has_backpack: int
-    has_first_aid_kit: int
+    # has_backpack: int
+    # has_first_aid_kit: int
     medkit_count: int
-    has_water: int
+    # has_water: int
     water_amount: int
-    has_food: int
+    # has_food: int
     food_amount: int
     has_radio: int
     level_id: str
@@ -86,9 +86,8 @@ def prediction_func(data: PredictionRequest):
         data.stamina, data.speed, data.intelligence, data.perception, data.agility,
         data.endurance, data.stress_resistance, data.luck, data.panic, data.fatigue,
         data.hunger, data.thirst, data.mental_stability, data.focus, data.confidence,
-        data.pain_tolerance, data.has_flashlight, data.flashlight_battery, data.has_knife,
-        data.has_backpack, data.has_first_aid_kit, data.medkit_count, data.has_water,
-        data.water_amount, data.has_food, data.food_amount, data.has_radio,
+        data.pain_tolerance, data.flashlight_battery, data.has_knife, data.medkit_count,
+        data.water_amount, data.food_amount, data.has_radio,
         data.level_difficulty, data.visibility, data.entity_density, data.entity_aggression,
         data.resource_density, data.maze_complexity, data.geometry_stability,
         data.spawn_area_danger, data.distance_to_nearest_entity, data.noise_generated,
