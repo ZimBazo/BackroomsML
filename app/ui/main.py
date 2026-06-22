@@ -52,7 +52,7 @@ if 'sex' not in st.session_state:
 if 'level_id' not in st.session_state:
             st.session_state.level_id = '0'
 
-for key in ['flashlight_battery', 'food_amount', 'medkit_count', 'water_amount']:
+for key in ['flashlight_battery', 'food_amount', 'medkit_count', 'water_amount', 'has_knife', 'has_radio']:
     if f'{key}' not in st.session_state:
             st.session_state[f'{key}'] = 0
 
@@ -183,22 +183,38 @@ with tab2:
     state_tab2()
 
 with tab3:
-# with st.expander("Снаряжение"):
-    st.warning('У вас имеется 3 очка. Их можно потратить на предмет или расходники. 1 предмет или одна порция расходников требуют 1 очко')
+    MAX_POINTS = 3
+
+    used_points = sum([
+        st.session_state.get('has_knife', 0),
+        st.session_state.get('has_radio', 0),
+        st.session_state.get('flashlight_battery', 0),
+        st.session_state.get('medkit_count', 0),
+        st.session_state.get('water_amount', 0),
+        st.session_state.get('food_amount', 0),
+    ])
+    remaining = MAX_POINTS - used_points
+
+    st.info(f"**Система очков:** У вас **{MAX_POINTS}** очков. "
+            f"Каждый предмет или порция расходников стоит **1** очко. "
+            f"Нож и рация — по 1 очку. Батарейки, аптечки, вода и еда — по 1 очку за порцию.")
+
+    if remaining < 0:
+        st.error(f'Превышен лимит очков! Потрачено: {used_points}, доступно: {MAX_POINTS}')
+    elif remaining == 0:
+        st.warning('Все очки потрачены!')
+    else:
+        st.metric('Оставшиеся очки', remaining)
+
     col1, col2 = st.columns(2)
     with col1:
-        # has_flashlight = st.toggle('Фонарик')
-        flashlight_battery = st.segmented_control(label='Заряд фонарика', options=[0, 1, 2, 3], default=0, on_change=value_check(type='flashlight_battery'), key='flashlight_battery')
-        has_knife = st.toggle('Нож')
-        has_radio = st.toggle('Рация')
-        # has_backpack = st.toggle('Рюкзак')
+        has_knife = st.segmented_control('Нож', [0, 1], key='has_knife')
+        has_radio = st.segmented_control('Рация', [0, 1], key='has_radio')
+        flashlight_battery = st.segmented_control('Батарейки фонарика', [0, 1, 2, 3], key='flashlight_battery')
     with col2:
-        # has_first_aid_kit = st.toggle('Аптечка')
-        medkit_count = st.segmented_control(label='Количество аптечек', options=[0, 1, 2, 3], default=0, on_change=value_check(type='medkit_count'), key='medkit_count')
-        # has_water = st.toggle('Вода')
-        water_amount = st.segmented_control(label='Количество воды', options=[0, 1, 2, 3], default=0, on_change=value_check(type='water_amount'), key='water_amount')
-        # has_food = st.toggle('Еда')
-        food_amount = st.segmented_control(label='Количество еды', options=[0, 1, 2, 3], default=0, on_change=value_check(type='food_amount'), key='food_amount')
+        medkit_count = st.segmented_control('Аптечки', [0, 1, 2, 3], key='medkit_count')
+        water_amount = st.segmented_control('Вода (500мл порции)', [0, 1, 2, 3], key='water_amount')
+        food_amount = st.segmented_control('Еда (500ккал порции)', [0, 1, 2, 3], key='food_amount')
 
 with tab4:
     col1, col2 = st.columns(2)
@@ -260,7 +276,7 @@ bad_messages = {
     '5': f'был раздавлен обвалившимся бетоном на Уровне {st.session_state.level_id}',
     '6': 'слишком долго смотрел в темноту.',
     '7': 'утонул в «миндальной воде», которая оказалась чем-то другим.',
-    '8': 'попал на неправильную вечеринку и был разорван Partygoers.',
+    '8': 'попал на неправильную вечеринку и был разорван Partygoers ;(',
     '9': 'провалился сквозь пол и исчез навсегда.',
     '10': 'наконец понял, что выхода нет.',
     '11': 'был убит Сущностью.',
@@ -303,16 +319,16 @@ with tab5:
         'confidence': st.session_state.get('confidence', 80),
         'pain_tolerance': st.session_state.get('pain_tolerance', 50),
         # 'has_flashlight': int(has_flashlight),
-        'flashlight_battery': (flashlight_battery if flashlight_battery != None else 0) * 33,
-        'has_knife': int(has_knife),
+        'flashlight_battery': (st.session_state.get('flashlight_battery', 0) * 33),
+        'has_knife': st.session_state.get('has_knife', 0),
         # 'has_backpack': int(has_backpack),
         # 'has_first_aid_kit': int(has_first_aid_kit),
-        'medkit_count': medkit_count * 3,
+        'medkit_count': (st.session_state.get('medkit_count', 0) * 3),
         # 'has_water': int(has_water),
-        'water_amount': water_amount * 1000,
+        'water_amount': (st.session_state.get('water_amount', 0) * 1000),
         # 'has_food': int(has_food),
-        'food_amount': food_amount * 1000,
-        'has_radio': int(has_radio),
+        'food_amount': (st.session_state.get('food_amount', 0) * 1000),
+        'has_radio': st.session_state.get('has_radio', 0),
         'level_id': level_id,
         'level_difficulty': level_difficulty,
         'visibility': visibility,
@@ -329,21 +345,24 @@ with tab5:
     }
     st.image(image='app/ui/images/predict_picture.webp', width='stretch')    
     if st.button('Предсказать выживаемость', width='stretch'):
-        @st.dialog('Предсказание:')
-        def prediction():
-            response = requests.post(f'{fastapi_url}/predict', json=payload)
-        
-            if response.status_code == 200:
-                data = response.json()
-                result = data.get("prediction")
-                is_survived = [f'Неудача! Бедняга {name} {random_message(type="bad")}', f'Ура! Бедняга {name} {random_message(type="good")}'][result]
-                st.write(f'{is_survived}')
-                result = data.get("probability")
-                surviving_probability = result
-                st.badge(f'Вероятность выживания: {surviving_probability:.3f}', color='primary')
-            else:
-                st.error(f'Ошибка при запросе: {response.status_code}')
+        if remaining >= 0:
+            @st.dialog('Предсказание:')
+            def prediction():
+                response = requests.post(f'{fastapi_url}/predict', json=payload)
+            
+                if response.status_code == 200:
+                    data = response.json()
+                    result = data.get("prediction")
+                    is_survived = [f'Неудача! Бедолага {name} {random_message(type="bad")}', f'Ура! Бедолага {name} {random_message(type="good")}'][result]
+                    st.write(f'{is_survived}')
+                    result = data.get("probability")
+                    surviving_probability = result
+                    st.badge(f'Вероятность выживания: {surviving_probability:.3f}', color='primary')
+                else:
+                    st.error(f'Ошибка при запросе: {response.status_code}')
 
-        prediction()
+            prediction()
+        else:
+            st.error('Вы потратили больше очков чем полагается!')
 
     st.table(payload)

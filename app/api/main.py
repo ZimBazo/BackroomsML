@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from loguru import logger
+# from loguru import logger
 import joblib
 
 app = FastAPI()
@@ -97,12 +97,12 @@ def prediction_func(data: PredictionRequest):
         *special_rule_dummies
     ]
     
-    logger.warning(f'Data features: {features}')
+    # logger.warning(f'Data features: {features}')
 
     proba = float(model.predict_proba([features])[0][1])
     pred = 1 if proba >= 0.65 else 0
 
-    logger.warning(f'Prediction: {pred}, Probability: {proba}')
+    # logger.warning(f'Prediction: {pred}, Probability: {proba}')
 
     return {
         'prediction': int(pred),
