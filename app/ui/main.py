@@ -1,5 +1,3 @@
-from turtle import fillcolor
-
 from pandas.core.config_init import val_mca
 import streamlit as st
 import pandas as pd
@@ -7,10 +5,11 @@ import os
 import random
 import requests
 import plotly.graph_objects as go
-from loguru import logger
+# from loguru import logger
 
 
-fastapi_url = 'http://127.0.0.1:8000'
+# fastapi_url = 'http://127.0.0.1:8000'
+fastapi_url = os.environ.get('API_URL', 'http://127.0.0.1:8000')
 
 LEVEL_PRESETS = {
     '0':  {'level_difficulty': 60, 'visibility': 65, 'entity_density': 15, 'entity_aggression': 10, 'resource_density': 30, 'maze_complexity': 85, 'geometry_stability': 60, 'special_rule': 'neutral'},

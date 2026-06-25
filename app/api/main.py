@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -6,11 +7,13 @@ import joblib
 
 app = FastAPI()
 
-model = joblib.load('../../models/best_model_v1.pkl')
+# model = joblib.load('../../models/best_model_v1.pkl')
+model = joblib.load(os.path.join(os.path.dirname(__file__), '../../models/best_model_v1.pkl'))
 
 origins = [
     'http://127.0.0.1:8501',
-    'http://localhost:8501'
+    'http://localhost:8501',
+    'http://frontend:8501'
 ]
 
 app.add_middleware(
