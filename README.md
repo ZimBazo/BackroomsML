@@ -1,4 +1,6 @@
 # BackroomsML
+The project is a complete machine learning cycle for predicting the survival of characters in a simulated environment (Backrooms). The system covers all the main stages of work: creation of synthetic data, training and evaluation of the model, as well as its deployment using the API and web interface.
+
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571.svg?style=for-the-badge&logo=fastapi)
 ![Streamlit](https://img.shields.io/badge/Streamlit-%23FE4B4B.svg?style=for-the-badge&logo=streamlit&logoColor=white)
@@ -6,9 +8,6 @@
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243.svg?style=for-the-badge&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
-
-
-The project is a complete machine learning cycle for predicting the survival of characters in a simulated environment (Backrooms). The system covers all the main stages of work: creation of synthetic data, training and evaluation of the model, as well as its deployment using the API and web interface.
 ## Why This Project
 BackroomsML is a project where I have identified a full-scale toolkit for staff training in the Backroomsml world. It includes all the settings, from creating a GUI to uploading the API and web interface to docker.
 
@@ -48,9 +47,9 @@ pip install -r requirements-ui.txt
 streamlit run app/ui/main.py
 ```
 
-## API (example)
+## API
 
-**POST** `/predict`
+**POST** `/predict` (example)
 
 ```json
 {
