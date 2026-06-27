@@ -8,6 +8,9 @@ The project is a complete machine learning cycle for predicting the survival of 
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243.svg?style=for-the-badge&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
+
+<img width="1576" height="1080" alt="Tets" src="https://github.com/user-attachments/assets/3fc9ab77-bff3-42ab-8655-90f9923dfb35" />
+
 ## Why This Project
 BackroomsML is a project where I have identified a full-scale toolkit for staff training in the Backroomsml world. It includes all the settings, from creating a GUI to uploading the API and web interface to docker.
 
