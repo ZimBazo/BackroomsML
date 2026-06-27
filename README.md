@@ -14,11 +14,6 @@
 
 <img width="1576" height="1080" alt="Tets" src="https://github.com/user-attachments/assets/3fc9ab77-bff3-42ab-8655-90f9923dfb35" />
 
-![GitHub stars](https://img.shields.io/github/stars/ZimBazo/BackroomsML?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/ZimBazo/BackroomsML?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/ZimBazo/BackroomsML?style=for-the-badge)
-![License](https://img.shields.io/github/license/ZimBazo/BackroomsML?style=for-the-badge)
-
 ## Why This Project
 BackroomsML is a project where I have identified a full-scale toolkit for staff training in the Backroomsml world. It includes all the settings, from creating a GUI to uploading the API and web interface to docker.
 
