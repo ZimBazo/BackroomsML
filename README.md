@@ -2,15 +2,13 @@
 
   The project is a complete machine learning cycle for predicting the survival of characters in a simulated environment (Backrooms). The system covers all the main stages of work: creation of synthetic data, training and evaluation of the model, as well as its deployment using the API and web interface.
   
-
-
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571.svg?style=for-the-badge&logo=fastapi)
 ![Streamlit](https://img.shields.io/badge/Streamlit-%23FE4B4B.svg?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243.svg?style=for-the-badge&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-2A8A3E.svg?style=for-the-badge)
 
 <img width="1576" height="1080" alt="Tets" src="https://github.com/user-attachments/assets/3fc9ab77-bff3-42ab-8655-90f9923dfb35" />
 
