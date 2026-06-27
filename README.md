@@ -27,6 +27,20 @@ In the final version, about fifty different characteristics affect survival. The
 | Psychological state | panic, fatigue, hunger, thirst, mental_stability, focus, confidence, pain_tolerance |
 | Inventory | has_flashlight, flashlight_battery, has_knife, has_backpack, has_first_aid_kit, medkit_count, has_water, water_amount, has_food, food_amount, has_radio |
 | Environment & targets | level_id, level_difficulty, visibility, entity_density, entity_aggression, resource_density, maze_complexity, geometry_stability, special_rule, spawn_area_danger, distance_to_nearest_entity, noise_generated, time_since_last_encounter, survived_24h, survival_time_hours, escape_probability |
+
+## Model Training
+
+Three targets can be trained independently:
+- **survived_24h** (binary classification) — the primary model
+- **survival_time_hours** (regression (not used))
+- **escape_probability** (regression (not used))
+
+For `survived_24h`, the pipeline uses:
+1. Label encoding for categorical features (sex, level_id, special_rule)
+2. Random undersampling to handle class imbalance
+3. Hyperparameter tuning via GridSearchCV
+4. XGBoost as the final model (best_model_v1.pkl)
+
 ## Deployment
 
 ### Docker (really recommended)
